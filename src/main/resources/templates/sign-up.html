@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+</head>
+<body>
+<form>
+    <label for="id-input">닉네임</label>
+    <input id="id-input" name="username">
+
+    <button id="sign-up-btn">
+        <a href="/chat">회원가입</a></button>
+</form>
+</body>
+<script th:inline="javascript">
+    const signUpBtn = document.getElementById("sign-up-btn");
+    const username = document.getElementById("id-input");
+
+    signUpBtn.addEventListener('click', e => {
+        localStorage.setItem("key", username.value);
+    })
+
+</script>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<div class="container">
+    <div class="col-6">
+        <label><b>채팅방</b></label>
+    </div>
+    <div>
+        <div id="msgArea" class="col"></div>
+        <div class="col-6">
+            <div class="input-group mb-3">
+                <input type="text" id="msg" class="form-control" autofocus>
+                <div class="input-group-append">
+                    <button type="button" id="button-send">전송</button>
+                    <button type="button" id="button-out">나가기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const username = localStorage.getItem("key") ? localStorage.getItem("key") : "익명의 사용자";
+    const websocket = new WebSocket("ws://192.168.1.219:8080/ws/chat");
+
+    const sendBtn = document.getElementById('button-send');
+    const outBtn = document.getElementById('button-out');
+    const msgArea = document.getElementById('msgArea');
+
+    document.addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            send();
+        }
+    })
+
+    sendBtn.addEventListener('click', (e) => {
+        send();
+    })
+
+    outBtn.addEventListener('click', e => {
+        location.href = "/";
+        onClose(e);
+    })
+
+    websocket.onopen = onOpen;
+    websocket.onclose = onClose;
+    websocket.onmessage = onMessage;
+
+    // 채팅창에서 나갔을 때
+    function onClose(e) {
+        const str = username + " 님이 방을 나가셨습니다.";
+        websocket.send(str);
+    }
+
+    // 채팅창에 들어왔을 때
+    function onOpen(e) {
+        const str = username + " 님이 입장하셨습니다.";
+        websocket.send(str);
+    }
+
+    function send() {
+        const msg = document.getElementById("msg");
+
+        console.log(username + ": " + msg.value);
+        websocket.send(username + ": " + msg.value);
+        msg.value = '';
+    }
+
+    function onMessage(msg) {
+        const data = msg.data;
+        const sessionId = null;
+
+        // 데이터를 보낸 사람
+        const message = null;
+        const arr = data.split(":");
+
+        for (let i = 0; i < arr.length; i++) {
+            console.log('arr[' + i + ']: ' + arr[i]);
+        }
+        const h = document.createElement('div');
+        h.setAttribute("message", "message");
+        h.innerText = msg.data;
+        msgArea.appendChild(h);
+    }
+</script>
+</html>
